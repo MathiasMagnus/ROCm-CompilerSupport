@@ -1,0 +1,269 @@
+{
+	"version": 6,
+	"cmakeMinimumRequired": {
+		"major": 3,
+		"minor": 25,
+		"patch": 0
+	},
+	"configurePresets": [
+		{
+			"name": "layout",
+			"hidden": true,
+			"binaryDir": "${sourceParentDir}/../build/${presetName}",
+			"installDir": "${sourceParentDir}/../install/${presetName}"
+		},
+		{
+			"name": "generator-msbuild",
+			"hidden": true,
+			"generator": "Visual Studio 17 2022",
+			"architecture": {
+				"value": "x64",
+				"strategy": "set"
+			}
+		},
+		{
+			"name": "generator-ninja",
+			"hidden": true,
+			"generator": "Ninja"
+		},
+		{
+			"name": "toolchain-msbuild-c/c++-msvc-v143",
+			"hidden": true,
+			"toolset": {
+				"value": "v143,host=x64",
+				"strategy": "set"
+			},
+			"cacheVariables": {
+				"CMAKE_C_COMPILER": "cl.exe",
+				"CMAKE_CXX_COMPILER": "cl.exe"
+			}
+		},
+		{
+			"name": "toolchain-makefiles-c/c++-llvm-16",
+			"hidden": true,
+			"cacheVariables": {
+				"CMAKE_C_COMPILER": "clang-16",
+				"CMAKE_CXX_COMPILER": "clang++-16"
+			}
+		},
+		{
+			"name": "msbuild-msvc-v143",
+			"displayName": "MSBuild MSVC v143",
+			"inherits": [
+				"layout",
+				"generator-msbuild",
+				"toolchain-msbuild-c/c++-msvc-v143"
+			]
+		},
+		{
+			"name": "ninja-llvm-16",
+			"displayName": "Ninja LLVM 16 (Release)",
+			"inherits": [
+				"layout",
+				"generator-ninja",
+				"toolchain-makefiles-c/c++-llvm-16"
+			],
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Release",
+				"AMDDeviceLibs_ROOT": "/home/mate/Source/Repos/ROCm-Device-Libs/install/ninja-llvm-16",
+                "Clang_ROOT": "/home/mate/Source/Repos/llvm-project/install/ninja-llvm-16",
+                "LLD_ROOT": "/home/mate/Source/Repos/llvm-project/install/ninja-llvm-16",
+				"COMGR_BUILD_SHARED_LIBS": false,
+                "BUILD_TESTING": false
+			}
+		},
+		{
+			"name": "ninja-llvm-16-debug",
+			"displayName": "Ninja LLVM 16 (Debug)",
+			"inherits": [
+				"layout",
+				"generator-ninja",
+				"toolchain-makefiles-c/c++-llvm-16"
+			],
+			"cacheVariables": {
+				"CMAKE_BUILD_TYPE": "Debug",
+				"AMDDeviceLibs_ROOT": "/home/mate/Source/Repos/ROCm-Device-Libs/install/ninja-llvm-16-debug",
+                "Clang_ROOT": "/home/mate/Source/Repos/llvm-project/install/ninja-llvm-16-debug",
+                "LLD_ROOT": "/home/mate/Source/Repos/llvm-project/install/ninja-llvm-16-debug",
+				"COMGR_BUILD_SHARED_LIBS": false,
+                "BUILD_TESTING": false
+			}
+		}
+	],
+	"buildPresets": [
+		{
+			"name": "msbuild-parallel",
+			"hidden": true,
+			"nativeToolOptions": [
+				"/maxCpuCount:$env{NUMBER_OF_PROCESSORS}"
+			],
+			"environment": {
+				"UseMultiToolTask": "true",
+				"EnforceProcessCountAcrossBuilds": "true",
+				"MultiProcMaxCount": "$env{NUMBER_OF_PROCESSORS}"
+			}
+		},
+		{
+			"name": "msbuild-minimal-verbosity",
+			"hidden": true,
+			"nativeToolOptions": [
+				"/nologo",
+				"/verbosity:minimal"
+			]
+		},
+		{
+			"name": "msbuild-msvc-v143-release",
+			"displayName": "Release",
+			"configuration": "Release",
+			"configurePreset": "msbuild-msvc-v143",
+			"inherits": [
+				"msbuild-parallel",
+				"msbuild-minimal-verbosity"
+			]
+		},
+		{
+			"name": "msbuild-msvc-v143-debug",
+			"displayName": "Debug",
+			"configuration": "Debug",
+			"configurePreset": "msbuild-msvc-v143",
+			"inherits": [
+				"msbuild-parallel",
+				"msbuild-minimal-verbosity"
+			]
+		},
+		{
+			"name": "msbuild-msvc-v143-release-install",
+			"displayName": "Release",
+			"configuration": "Release",
+			"configurePreset": "msbuild-msvc-v143",
+			"inherits": [
+				"msbuild-parallel",
+				"msbuild-minimal-verbosity"
+			],
+			"targets": [
+				"install"
+			]
+		},
+		{
+			"name": "msbuild-msvc-v143-debug-install",
+			"displayName": "Debug",
+			"configuration": "Debug",
+			"configurePreset": "msbuild-msvc-v143",
+			"inherits": [
+				"msbuild-parallel",
+				"msbuild-minimal-verbosity"
+			],
+			"targets": [
+				"install"
+			]
+		},
+		{
+			"name": "ninja-llvm-16",
+			"displayName": "Release",
+			"configuration": "Release",
+			"configurePreset": "ninja-llvm-16",
+			"nativeToolOptions": [ "-j4" ]
+		},
+		{
+			"name": "ninja-llvm-16-debug",
+			"displayName": "Debug",
+			"configuration": "Debug",
+			"configurePreset": "ninja-llvm-16-debug",
+			"nativeToolOptions": [ "-j4" ]
+		},
+		{
+			"name": "ninja-llvm-16-install",
+			"displayName": "Release",
+			"configuration": "Release",
+			"configurePreset": "ninja-llvm-16",
+			"targets": [
+				"install"
+			],
+			"nativeToolOptions": [ "-j4" ]
+		},
+		{
+			"name": "ninja-llvm-16-debug-install",
+			"displayName": "Debug",
+			"configuration": "Debug",
+			"configurePreset": "ninja-llvm-16-debug",
+			"targets": [
+				"install"
+			],
+			"nativeToolOptions": [ "-j4" ]
+		}
+	],
+	"workflowPresets": [
+		{
+			"name": "msbuild-msvc-v143-release",
+			"displayName": "MSBuild MSVC v143",
+			"steps": [
+				{
+					"type": "configure",
+					"name": "msbuild-msvc-v143"
+				},
+				{
+					"type": "build",
+					"name": "msbuild-msvc-v143-release"
+				},
+				{
+					"type": "build",
+					"name": "msbuild-msvc-v143-release-install"
+				}
+			]
+		},
+		{
+			"name": "msbuild-msvc-v143-debug",
+			"displayName": "MSBuild MSVC v143 (Debug)",
+			"steps": [
+				{
+					"type": "configure",
+					"name": "msbuild-msvc-v143"
+				},
+				{
+					"type": "build",
+					"name": "msbuild-msvc-v143-debug"
+				},
+				{
+					"type": "build",
+					"name": "msbuild-msvc-v143-debug-install"
+				}
+			]
+		},
+		{
+			"name": "ninja-llvm-16",
+			"displayName": "Ninja LLVM 16",
+			"steps": [
+				{
+					"type": "configure",
+					"name": "ninja-llvm-16"
+				},
+				{
+					"type": "build",
+					"name": "ninja-llvm-16"
+				},
+				{
+					"type": "build",
+					"name": "ninja-llvm-16-install"
+				}
+			]
+		},
+		{
+			"name": "ninja-llvm-16-debug",
+			"displayName": "Ninja LLVM 16 (Debug)",
+			"steps": [
+				{
+					"type": "configure",
+					"name": "ninja-llvm-16-debug"
+				},
+				{
+					"type": "build",
+					"name": "ninja-llvm-16-debug"
+				},
+				{
+					"type": "build",
+					"name": "ninja-llvm-16-debug-install"
+				}
+			]
+		}
+	]
+}

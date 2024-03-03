@@ -249,6 +249,8 @@ static StringRef getLanguageName(amd_comgr_language_t Language) {
     return "AMD_COMGR_LANGUAGE_HC";
   case AMD_COMGR_LANGUAGE_HIP:
     return "AMD_COMGR_LANGUAGE_HIP";
+  case AMD_COMGR_LANGUAGE_CXX_FOR_OPENCL_1_0:
+    return "AMD_COMGR_LANGUAGE_CXX_FOR_OPENCL_1_0";
   }
 
   llvm_unreachable("invalid language");

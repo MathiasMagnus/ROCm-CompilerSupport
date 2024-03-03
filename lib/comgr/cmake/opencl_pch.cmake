@@ -35,18 +35,20 @@ function(generate_pch version)
     # generated headers are not.
     set(clang_resource_headers_gen clang-resource-headers)
   endif()
-
-  add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/opencl${version}-c.pch
+  
+  string(TOLOWER ${version} version_lower)
+  add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/opencl${version_lower}-c.pch
     COMMAND $<TARGET_FILE:clang> -cc1 -x cl-header -triple amdgcn-amd-amdhsa
       -Werror -O3 -Dcl_khr_fp64 -Dcl_khr_fp16 -DNDEBUG -cl-std=CL${version}
-      -emit-pch -o ${CMAKE_CURRENT_BINARY_DIR}/opencl${version}-c.pch
+      -emit-pch -o ${CMAKE_CURRENT_BINARY_DIR}/opencl${version_lower}-c.pch
       < ${OPENCL_C_H}
     DEPENDS clang ${OPENCL_C_H} ${clang_resource_headers_gen}
-    COMMENT "Generating opencl${version}-c.pch")
+    COMMENT "Generating opencl${version_lower}-c.pch")
 
-  add_custom_target(opencl${version}-c.pch_target ALL
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/opencl${version}-c.pch)
+  add_custom_target(opencl${version_lower}-c.pch_target ALL
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/opencl${version_lower}-c.pch)
 endfunction()
 
 generate_pch(1.2)
 generate_pch(2.0)
+generate_pch(C++1.0)

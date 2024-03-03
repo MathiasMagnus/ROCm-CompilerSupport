@@ -78,6 +78,9 @@ amd_comgr_status_t addPrecompiledHeaders(DataAction *ActionInfo,
   case AMD_COMGR_LANGUAGE_OPENCL_2_0:
     return addObject(ResultSet, AMD_COMGR_DATA_KIND_PRECOMPILED_HEADER,
                      "opencl2.0-c.pch", opencl2_0_c, opencl2_0_c_size);
+  case AMD_COMGR_LANGUAGE_CXX_FOR_OPENCL_1_0:
+    return addObject(ResultSet, AMD_COMGR_DATA_KIND_PRECOMPILED_HEADER,
+                     "opencl2.0-c.pch", opencl2_0_c, opencl2_0_c_size);
   default:
     return AMD_COMGR_STATUS_ERROR_INVALID_ARGUMENT;
   }
@@ -87,6 +90,7 @@ amd_comgr_status_t addDeviceLibraries(DataAction *ActionInfo,
                                       DataSet *ResultSet) {
   if (ActionInfo->Language != AMD_COMGR_LANGUAGE_OPENCL_1_2 &&
       ActionInfo->Language != AMD_COMGR_LANGUAGE_OPENCL_2_0 &&
+      ActionInfo->Language != AMD_COMGR_LANGUAGE_CXX_FOR_OPENCL_1_0 &&
       ActionInfo->Language != AMD_COMGR_LANGUAGE_HIP) {
     return AMD_COMGR_STATUS_ERROR_INVALID_ARGUMENT;
   }

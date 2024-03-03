@@ -48,6 +48,13 @@
 #define AMD_COMGR_CALL
 #endif
 
+#ifdef AMD_COMGR_STATIC
+
+#define AMD_COMGR_EXPORT_DECORATOR
+#define AMD_COMGR_IMPORT_DECORATOR
+
+#else // AMD_COMGR_STATIC
+
 #ifndef AMD_COMGR_EXPORT_DECORATOR
 #ifdef __GNUC__
 #define AMD_COMGR_EXPORT_DECORATOR __attribute__ ((visibility ("default")))
@@ -63,6 +70,8 @@
 #define AMD_COMGR_IMPORT_DECORATOR __declspec(dllimport)
 #endif
 #endif
+
+#endif // AMD_COMGR_STATIC
 
 #define AMD_COMGR_API_EXPORT AMD_COMGR_EXPORT_DECORATOR AMD_COMGR_CALL
 #define AMD_COMGR_API_IMPORT AMD_COMGR_IMPORT_DECORATOR AMD_COMGR_CALL
@@ -242,9 +251,13 @@ typedef enum amd_comgr_language_s {
    */
   AMD_COMGR_LANGUAGE_HIP = 0x4,
   /**
+   * C++ for OpenCL 1.0.
+   */
+  AMD_COMGR_LANGUAGE_CXX_FOR_OPENCL_1_0 = 0x5,
+  /**
    * Marker for last valid language.
    */
-  AMD_COMGR_LANGUAGE_LAST = AMD_COMGR_LANGUAGE_HIP
+  AMD_COMGR_LANGUAGE_LAST = AMD_COMGR_LANGUAGE_CXX_FOR_OPENCL_1_0
 } amd_comgr_language_t;
 
 /**

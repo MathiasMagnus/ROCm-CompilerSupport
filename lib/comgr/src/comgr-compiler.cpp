@@ -1033,6 +1033,11 @@ amd_comgr_status_t AMDGPUCompiler::addCompilationFlags() {
     Args.push_back("-isystem");
     Args.push_back(ClangIncludePath2.c_str());
     break;
+  case AMD_COMGR_LANGUAGE_CXX_FOR_OPENCL_1_0:
+    Args.push_back("cl");
+    Args.push_back("-std=CLC++1.0");
+    Args.push_back("-cl-no-stdinc");
+    break;
   default:
     return AMD_COMGR_STATUS_ERROR_INVALID_ARGUMENT;
   }

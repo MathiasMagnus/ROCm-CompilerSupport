@@ -1,3 +1,10 @@
+if(TARGET clang)
+  set(CLANG_EXE $<TARGET_FILE:clang>)
+else()
+  find_program(CLANG_EXE clang
+    HINTS "${LLVM_TOOLS_BINARY_DIR}")
+endif()
+
 set(TEST_INPUT_BINARIES)
 set(TEST_INPUT_BITCODES)
 # Create target ${name} which depends on a clang command to compile ${input} to
@@ -6,7 +13,7 @@ set(TEST_INPUT_BITCODES)
 macro(add_test_input_binary name input output)
   add_custom_command(
     OUTPUT "${output}"
-    COMMAND "$<TARGET_FILE:clang>" --target=amdgcn-amd-amdhsa -mcpu=gfx803 -nogpulib
+    COMMAND "${CLANG_EXE}" --target=amdgcn-amd-amdhsa -mcpu=gfx803 -nogpulib
     ${ARGN} "${CMAKE_CURRENT_SOURCE_DIR}/${input}" -o "${output}"
     VERBATIM
     DEPENDS clang lld "${input}")
@@ -23,7 +30,7 @@ endmacro()
 macro(add_test_shared_binary name target1 input1 target2 input2 output)
   add_custom_command(
     OUTPUT "${output}"
-    COMMAND "$<TARGET_FILE:clang>" --target=amdgcn-amd-amdhsa
+    COMMAND "${CLANG_EXE}" --target=amdgcn-amd-amdhsa
       "${input1}" "${input2}" -o "${output}"
     VERBATIM
     DEPENDS clang lld ${target1} ${target2})
@@ -92,8 +99,10 @@ add_test_shared_binary(shared23-v3 source2-v3 source/source2-v3.o source3-v3 sou
 
 
 configure_file("source/source1.cl" "source/source1.cl" COPYONLY)
+configure_file("source/source1.clcpp" "source/source1.clcpp" COPYONLY)
 configure_file("source/source1-device-libs.cl" "source/source1-device-libs.cl" COPYONLY)
 configure_file("source/source2.cl" "source/source2.cl" COPYONLY)
+configure_file("source/source2.clcpp" "source/source2.clcpp" COPYONLY)
 configure_file("source/include-a.h" "source/include-a.h" COPYONLY)
 configure_file("source/source1.s" "source/source1.s" COPYONLY)
 configure_file("source/shared.cl" "source/shared.cl" COPYONLY)
@@ -133,6 +142,10 @@ if (DEFINED HIP_COMPILER AND "${HIP_COMPILER}" STREQUAL "clang")
   target_compile_definitions("${name}"
     PRIVATE -DHIP_COMPILER=${HIP_COMPILER})
 endif()
+  if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    target_compile_definitions("${name}"
+      PRIVATE -D_CRT_SECURE_NO_WARNINGS)
+  endif()
   target_link_libraries("${name}"
     amd_comgr)
   add_dependencies("${name}"
@@ -163,6 +176,7 @@ add_comgr_test(symbols_test c)
 add_comgr_test(symbols_iterate_test c)
 add_comgr_test(compile_test c)
 add_comgr_test(compile_minimal_test c)
+add_comgr_test(compile_minimal_test_cxx_for_opencl c)
 add_comgr_test(compile_log_test c)
 add_comgr_test(compile_log_remarks_test c)
 add_comgr_test(compile_device_libs_test c)
